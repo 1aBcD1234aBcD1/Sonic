@@ -5,7 +5,7 @@ import (
 	"github.com/Fantom-foundation/go-opera/opera/genesis"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/signer/core"
+	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 	"io"
 	"os"
 	"sort"
@@ -30,8 +30,8 @@ func GetGenesisMetadata(header genesis.Header, genesisHashes genesis.Hashes) ([]
 		})
 	}
 
-	eip712data := core.TypedData{
-		Types: map[string][]core.Type{
+	eip712data := apitypes.TypedData{
+		Types: map[string][]apitypes.Type{
 			"EIP712Domain": {
 				{Name: "name", Type: "string"},
 				{Name: "version", Type: "string"},
@@ -46,7 +46,7 @@ func GetGenesisMetadata(header genesis.Header, genesisHashes genesis.Hashes) ([]
 			},
 		},
 		PrimaryType: "Genesis",
-		Domain: core.TypedDataDomain{
+		Domain: apitypes.TypedDataDomain{
 			Name:    header.NetworkName,
 			Version: header.GenesisID.String(),
 			ChainId: math.NewHexOrDecimal256(int64(header.NetworkID)),
@@ -115,7 +115,7 @@ func WriteSignatureIntoGenesisFile(header genesis.Header, signature []byte, file
 // See https://eips.ethereum.org/EIPS/eip-712 for the full specification.
 //
 // This gives context to the signed typed data and prevents signing of transactions.
-func TypedDataAndHash(typedData core.TypedData) ([]byte, string, error) {
+func TypedDataAndHash(typedData apitypes.TypedData) ([]byte, string, error) {
 	domainSeparator, err := typedData.HashStruct("EIP712Domain", typedData.Domain.Map())
 	if err != nil {
 		return nil, "", err
